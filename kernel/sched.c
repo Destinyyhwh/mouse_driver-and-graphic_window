@@ -20,6 +20,7 @@
 
 #include <signal.h>
 
+
 #define _S(nr) (1<<((nr)-1))
 #define _BLOCKABLE (~(_S(SIGKILL) | _S(SIGSTOP)))
 
@@ -152,6 +153,11 @@ int sys_pause(void)
 #define cursor_side 6
 #define vga_width 320
 #define vga_height 200
+
+void sys_get_message(message *msg){
+	return;
+}
+
 
 int sys_init_graphics(void){
 	outb(0x05, 0x3CE);

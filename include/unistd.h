@@ -54,6 +54,7 @@
 #include <sys/times.h>
 #include <sys/utsname.h>
 #include <utime.h>
+#include <linux/msg.h>
 
 #ifdef __LIBRARY__
 
@@ -144,8 +145,8 @@
 #define __NR_lstat	84
 #define __NR_readlink	85
 #define __NR_uselib	86
-#define __NR_init_graphics 87;
-
+#define __NR_init_graphics 87
+#define __NR_get_message 88
 
 
 #define _syscall0(type,name) \
@@ -268,6 +269,7 @@ int getppid(void);
 pid_t getpgrp(void);
 pid_t setsid(void);
 int init_graphics(void);
+void get_message(message *msg);
 
 #define __always_inline inline __attribute__((always_inline))
 
