@@ -147,6 +147,11 @@ int sys_pause(void)
 	schedule();
 	return 0;
 }
+#define vga_graph_memstart 0xA0000
+#define vga_graph_memsize 64000
+#define cursor_side 6
+#define vga_width 320
+#define vga_height 200
 
 int sys_init_graphics(void){
 	outb(0x05, 0x3CE);
@@ -176,7 +181,14 @@ int sys_init_graphics(void){
 	outb(0x0C, 0x3D4);
 	outb(0x0, 0x3D5);
 	outb(0x0D, 0x3D4);
-	outb(0x0, 0x3D5); 
+	outb(0x0, 0x3D5);
+
+	int i;
+	char *p = vga_graph_memstart;
+	for (i = 0; i < vga_graph_memsize; i++) {
+		*p++ = 3;
+	}
+
 	return 0;
 }
 
