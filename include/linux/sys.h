@@ -2,6 +2,20 @@
  * Why isn't this a .c file?  Enquiring minds....
  */
 
+
+#define MAX_MSG         1024
+
+typedef struct {
+    int mid;
+    int pid;
+    void *adt;
+}message;
+message msg_list[MAX_MSG];
+
+unsigned int msg_head;
+unsigned int msg_tail;
+
+
 extern int sys_setup();
 extern int sys_exit();
 extern int sys_fork();

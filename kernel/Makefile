@@ -26,7 +26,7 @@ CPP	=gcc -E -nostdinc -I../include
 
 OBJS  = sched.o system_call.o traps.o asm.o fork.o \
 	panic.o printk.o vsprintf.o sys.o exit.o \
-	signal.o mktime.o msg.o
+	signal.o mktime.o
 
 kernel.o: $(OBJS)
 	$(LD) -r -o kernel.o $(OBJS)
@@ -67,7 +67,7 @@ sched.s sched.o : sched.c ../include/linux/sched.h ../include/linux/head.h \
   ../include/linux/fs.h ../include/sys/types.h ../include/linux/mm.h \
   ../include/signal.h ../include/linux/kernel.h ../include/linux/sys.h \
   ../include/linux/fdreg.h ../include/asm/system.h ../include/asm/io.h \
-  ../include/asm/segment.h ../include/linux/msg.h
+  ../include/asm/segment.h
 signal.s signal.o : signal.c ../include/linux/sched.h ../include/linux/head.h \
   ../include/linux/fs.h ../include/sys/types.h ../include/linux/mm.h \
   ../include/signal.h ../include/linux/kernel.h ../include/asm/segment.h 
@@ -81,8 +81,3 @@ traps.s traps.o : traps.c ../include/string.h ../include/linux/head.h \
   ../include/linux/mm.h ../include/signal.h ../include/linux/kernel.h \
   ../include/asm/system.h ../include/asm/segment.h ../include/asm/io.h 
 vsprintf.s vsprintf.o : vsprintf.c ../include/stdarg.h ../include/string.h 
-msg.s msg.o : msg.c ../include/errno.h ../include/signal.h \
-  ../include/sys/types.h ../include/sys/wait.h ../include/linux/sched.h \
-  ../include/linux/head.h ../include/linux/fs.h ../include/linux/mm.h \
-  ../include/linux/kernel.h ../include/linux/tty.h ../include/termios.h \
-  ../include/asm/segment.h 

@@ -54,7 +54,6 @@
 #include <sys/times.h>
 #include <sys/utsname.h>
 #include <utime.h>
-#include <linux/msg.h>
 
 #ifdef __LIBRARY__
 
@@ -269,7 +268,7 @@ int getppid(void);
 pid_t getpgrp(void);
 pid_t setsid(void);
 int init_graphics(void);
-void get_message(message *msg);
+
 
 #define __always_inline inline __attribute__((always_inline))
 
