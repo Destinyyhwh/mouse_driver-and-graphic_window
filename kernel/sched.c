@@ -165,20 +165,28 @@ void post_message(int type)
 	}
 }
 
+int sys_paint(short *p){
+	char *yyh;
+	long x = get_fs_word(p);
+	long y = get_fs_word(p+1);
+	long color = get_fs_word(p+2);
+	yyh = (char*)vga_graph_memstart+y*vga_width+x;
+	*yyh = color;
+	return 0;
+}
 
-
-void sys_get_message(message *msg){
+int sys_get_message(message *msg){
     message tmp;
 	if(msg_tail==msg_head){
 		put_fs_long(0,msg);
-		return;
+		return 0;
 	}
 	
 	tmp = msg_list[msg_head];
 	msg_list[msg_head].mid = 0;
 	msg_head = (msg_head + 1) % MAX_MSG;;
 	put_fs_long(tmp.mid,msg);
-	return;
+	return 0;
 }
 
 

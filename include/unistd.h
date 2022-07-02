@@ -146,6 +146,7 @@
 #define __NR_uselib	86
 #define __NR_init_graphics 87
 #define __NR_get_message 88
+#define __NR_paint 89
 
 
 #define _syscall0(type,name) \
