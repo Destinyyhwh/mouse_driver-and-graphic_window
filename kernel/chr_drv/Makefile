@@ -25,7 +25,7 @@ CPP	=gcc -E -nostdinc -I../../include
 	-c -o $*.o $<
 
 OBJS  = tty_io.o console.o keyboard.2.o serial.o rs_io.o \
-	tty_ioctl.o mouse.2.o
+	tty_ioctl.o mouse.2.o 
 
 chr_drv.a: $(OBJS)
 	$(AR) rcs chr_drv.a $(OBJS)

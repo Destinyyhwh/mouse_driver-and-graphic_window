@@ -48,6 +48,20 @@
 #define O_NLRET(tty)	_O_FLAG((tty),ONLRET)
 #define O_LCUC(tty)	_O_FLAG((tty),OLCUC)
 
+int volatile jumpp;
+static unsigned char mouse_input_count = 0;
+static unsigned char mouse_left_down;
+static unsigned char mouse_right_down;
+static unsigned char mouse_left_move;
+static unsigned char mouse_down_move;
+
+static int mouse_x_position =20;
+static int mouse_y_position =20;
+static int  fcreate=0;
+int cnt=0;
+//struct message *headd;
+//struct message *cur;
+
 struct tty_struct tty_table[] = {
 	{
 		{ICRNL,		/* change incoming CR to NL */
@@ -346,4 +360,10 @@ void do_tty_interrupt(int tty)
 
 void chr_dev_init(void)
 {
+}
+
+
+void readmouse(int mousecode)
+{
+	printk("yyh\n");
 }
