@@ -144,6 +144,10 @@
 #define __NR_lstat	84
 #define __NR_readlink	85
 #define __NR_uselib	86
+#define __NR_init_graphics 87;
+
+
+
 #define _syscall0(type,name) \
 type name(void) \
 { \
@@ -263,6 +267,7 @@ int dup2(int oldfd, int newfd);
 int getppid(void);
 pid_t getpgrp(void);
 pid_t setsid(void);
+int init_graphics(void);
 
 #define __always_inline inline __attribute__((always_inline))
 
