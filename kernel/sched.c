@@ -154,7 +154,30 @@ int sys_pause(void)
 #define vga_width 320
 #define vga_height 200
 
+void post_message(int type)
+{
+	if (msg_tail != msg_head - 1) {
+		message msg;
+		msg.mid = type;
+		msg.pid = current->pid;
+		msg_list[msg_tail] = msg;
+		msg_tail = (msg_tail + 1) % MAX_MSG;
+	}
+}
+
+
+
 void sys_get_message(message *msg){
+    message tmp;
+	if(msg_tail==msg_head){
+		put_fs_long(0,msg);
+		return;
+	}
+	
+	tmp = msg_list[msg_head];
+	msg_list[msg_head].mid = 0;
+	msg_head = (msg_head + 1) % MAX_MSG;;
+	put_fs_long(tmp.mid,msg);
 	return;
 }
 

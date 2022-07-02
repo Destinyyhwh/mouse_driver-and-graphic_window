@@ -377,8 +377,12 @@ void readmouse(int mousecode)
             mouse_right_down = (mousecode & 0x2) == 0x2;
             mouse_left_move = (mousecode & 0x10) == 0x10;
             mouse_down_move = (mousecode & 0x20) == 0x20;
-			printk("%d",yyh);
-			yyh++;
+           if(mouse_left_down && mousecode == 9){
+                post_message(MSG_MOUSE_CLICK_L);
+            }
+            if(mouse_right_down && mousecode == 10){
+                post_message(MSG_MOUSE_CLICK_R);
+            }
             mouse_input_count++;
             break;
         case 2:
