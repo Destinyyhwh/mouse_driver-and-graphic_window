@@ -48,19 +48,19 @@
 #define O_NLRET(tty)	_O_FLAG((tty),ONLRET)
 #define O_LCUC(tty)	_O_FLAG((tty),OLCUC)
 
-int volatile jumpp;
+#define MSG_MOUSE_CLICK_L 1
+#define MSG_MOUSE_CLICK_R 3
+
 static unsigned char mouse_input_count = 0;
 static unsigned char mouse_left_down;
 static unsigned char mouse_right_down;
 static unsigned char mouse_left_move;
 static unsigned char mouse_down_move;
+static unsigned char mouse_x_overflow;
+static unsigned char mouse_y_overflow;
+static unsigned char mouse_x_position;
+static unsigned char mouse_y_position;
 
-static int mouse_x_position =20;
-static int mouse_y_position =20;
-static int  fcreate=0;
-int cnt=0;
-//struct message *headd;
-//struct message *cur;
 
 struct tty_struct tty_table[] = {
 	{
@@ -362,8 +362,44 @@ void chr_dev_init(void)
 {
 }
 
+int yyh=0;
 
 void readmouse(int mousecode)
 {
-	printk("yyh\n");
+    if(mousecode == 0xFA){
+        mouse_input_count = 1;
+        return ;
+    }
+    switch(mouse_input_count)
+    {
+        case 1:
+            mouse_left_down = (mousecode & 0x1) == 0x1;
+            mouse_right_down = (mousecode & 0x2) == 0x2;
+            mouse_left_move = (mousecode & 0x10) == 0x10;
+            mouse_down_move = (mousecode & 0x20) == 0x20;
+			printk("%d",yyh);
+			yyh++;
+            mouse_input_count++;
+            break;
+        case 2:
+            if(mouse_left_move)
+                mouse_x_position += (int)(0xFFFFFF00|mousecode);
+            else
+                mouse_x_position += (int)(mousecode);
+            if(mouse_x_position < 0) mouse_x_position = 0;
+            mouse_input_count++;
+			printk("%d",yyh);
+			yyh++;
+            break;
+        case 3:
+            if(mouse_down_move)
+                mouse_y_position += (int)(0xFFFFFF00|mousecode);
+            else
+                mouse_y_position += (int)(mousecode);
+            if(mouse_y_position < 0) mouse_y_position = 0;
+            mouse_input_count=1;
+			printk("%d",yyh);
+			yyh++;
+            break;
+	}
 }
