@@ -168,11 +168,11 @@ int sys_paint(object* p){
 	char *yyh;
 	int i;
 	int j;
-	long x = get_fs_long(p->x);
-	long y = get_fs_long(p->y);
-	long dx = get_fs_long(p->dx);
-	long dy = get_fs_long(p->dy);
-	long color = get_fs_long(p->color);
+	long x = get_fs_long(&p->x);
+	long y = get_fs_long(&p->y);
+	long dx = get_fs_long(&p->dx);
+	long dy = get_fs_long(&p->dy);
+	long color = get_fs_long(&p->color);
 	for(i=x;i<x+dx;i++){
 		for(j=y;j<y+dy;j++){
 			yyh = (char *)vga_graph_memstart+j*vga_width+i;
@@ -236,6 +236,13 @@ int sys_init_graphics(void){
 	outb(0x0, 0x3D5);
 	outb(0x0D, 0x3D4);
 	outb(0x0, 0x3D5);
+
+    int i;
+    char * p;
+    p = (char *)vga_graph_memstart;
+    for (i = 0; i < vga_graph_memsize; ++i)
+        *p++ = 3;
+
 	return 0;
 }
 
