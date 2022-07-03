@@ -167,11 +167,17 @@ void post_message(int type)
 
 int sys_paint(short *p){
 	char *yyh;
+	int i;
+	int j;
 	long x = get_fs_word(p);
 	long y = get_fs_word(p+1);
 	long color = get_fs_word(p+2);
-	yyh = (char*)vga_graph_memstart+y*vga_width+x;
-	*yyh = color;
+	for(i=x-cursor_side;i<=x+cursor_side;i++){
+		for(j=y-cursor_side;j<=y+cursor_side;j++){
+				yyh = (char*)vga_graph_memstart+j*vga_width+i;
+				*yyh = color;
+		}
+	}
 	return 0;
 }
 
