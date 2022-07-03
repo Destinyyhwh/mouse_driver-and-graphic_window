@@ -3,17 +3,25 @@
  */
 
 
-#define MAX_MSG         1024
-
 typedef struct {
-    int mid;
+    int mid;   //消息ID
     int pid;
     void *adt;
 }message;
-message msg_list[MAX_MSG];
+message msg_list[1024];
 
 unsigned int msg_head;
 unsigned int msg_tail;
+
+typedef struct {
+    long jiffies;
+    int type;
+    long init_jiffies;
+    int pid;
+    struct user_timer *next;
+} user_timer;
+
+user_timer *timer_head;
 
 
 extern int sys_setup();
@@ -106,6 +114,7 @@ extern int sys_uselib();
 extern int sys_init_graphics();
 extern int sys_get_message();
 extern int sys_paint();
+extern int sys_timer_create();
 
 fn_ptr sys_call_table[] = { sys_setup, sys_exit, sys_fork, sys_read,
 sys_write, sys_open, sys_close, sys_waitpid, sys_creat, sys_link,
@@ -122,7 +131,7 @@ sys_getpgrp, sys_setsid, sys_sigaction, sys_sgetmask, sys_ssetmask,
 sys_setreuid,sys_setregid, sys_sigsuspend, sys_sigpending, sys_sethostname,
 sys_setrlimit, sys_getrlimit, sys_getrusage, sys_gettimeofday, 
 sys_settimeofday, sys_getgroups, sys_setgroups, sys_select, sys_symlink,
-sys_lstat, sys_readlink, sys_uselib,sys_init_graphics,sys_get_message,sys_paint };
+sys_lstat, sys_readlink, sys_uselib,sys_init_graphics,sys_get_message,sys_paint,sys_timer_create };
 
 /* So we don't have to do any more manual updating.... */
 int NR_syscalls = sizeof(sys_call_table)/sizeof(fn_ptr);

@@ -13,7 +13,6 @@ mouse_interrupt:
 	movl $0x10,%eax
 	mov %ax,%ds
 	mov %ax,%es
-	//xor %al,%al		/* %eax is scan code */
 	xor %eax,%eax
 	inb $0x60,%al
 	pushl %eax

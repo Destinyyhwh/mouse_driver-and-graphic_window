@@ -156,12 +156,12 @@ int sys_pause(void)
 
 void post_message(int type)
 {
-	if (msg_tail != msg_head - 1) {
+	if (msg_tail != msg_head - 1) { //未满
 		message msg;
 		msg.mid = type;
 		msg.pid = current->pid;
 		msg_list[msg_tail] = msg;
-		msg_tail = (msg_tail + 1) % MAX_MSG;
+		msg_tail = (msg_tail + 1) % 1024;
 	}
 }
 
@@ -181,16 +181,30 @@ int sys_paint(short *p){
 	return 0;
 }
 
+int sys_timer_create(long seconds, int type)
+{
+    long jiffies = seconds / 10;
+    user_timer *timer = (user_timer*)malloc(sizeof(user_timer));
+    timer->init_jiffies = jiffies;
+    timer->jiffies = jiffies;
+    timer->type = type;
+    timer->pid = current->pid;
+    timer->next = timer_head;
+    timer_head = timer;
+    return 1;
+}
+
+
 int sys_get_message(message *msg){
     message tmp;
-	if(msg_tail==msg_head){
+	if(msg_tail==msg_head){  //循环消息队列
 		put_fs_long(0,msg);
 		return 0;
 	}
 	
 	tmp = msg_list[msg_head];
-	msg_list[msg_head].mid = 0;
-	msg_head = (msg_head + 1) % MAX_MSG;;
+	msg_list[msg_head].mid = 0;   //清空
+	msg_head = (msg_head + 1) % 1024;
 	put_fs_long(tmp.mid,msg);
 	return 0;
 }
@@ -203,35 +217,29 @@ int sys_init_graphics(void){
 	outb(0x05, 0x3CF);
 	outb(0x04, 0x3C4);
 	outb(0x08, 0x3C5);
-
 	outb(0x01, 0x3D4);
 	outb(0x4F, 0x3D5);
 	outb(0x03, 0x3D4);
 	outb(0x82, 0x3D5);
-
 	outb(0x07, 0x3D4);
 	outb(0x1F, 0x3D5);
 	outb(0x12, 0x3D4);
 	outb(0x8F, 0x3D5);
 	outb(0x17, 0x3D4);
 	outb(0xA3, 0x3D5);
-
 	outb(0x14, 0x3D4);
 	outb(0x40, 0x3D5);
 	outb(0x13, 0x3D4);
 	outb(0x28, 0x3D5);
-
 	outb(0x0C, 0x3D4);
 	outb(0x0, 0x3D5);
 	outb(0x0D, 0x3D4);
 	outb(0x0, 0x3D5);
-
 	int i;
 	char *p = vga_graph_memstart;
 	for (i = 0; i < vga_graph_memsize; i++) {
 		*p++ = 3;
 	}
-
 	return 0;
 }
 
@@ -395,6 +403,25 @@ void do_timer(long cpl)
 	extern int beepcount;
 	extern void sysbeepstop(void);
 
+
+	user_timer *timer = timer_head;
+	user_timer *pre = NULL;
+	while (timer) {
+		user_timer *tt = timer->next;
+		timer->jiffies--;
+		if (timer->jiffies == 0) {
+			post_message(3);
+			if (timer->type == 0) {
+				timer->jiffies = timer->init_jiffies;
+			} else {
+				if (pre) pre->next = timer->next;
+				else timer_head = timer->next;
+				free(timer);
+			}
+		}
+		timer = tt;
+	}
+	
 	if (beepcount)
 		if (!--beepcount)
 			sysbeepstop();
