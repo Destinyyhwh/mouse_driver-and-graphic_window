@@ -173,12 +173,11 @@ int sys_paint(object* p){
 	long dx = get_fs_long(&p->dx);
 	long dy = get_fs_long(&p->dy);
 	long color = get_fs_long(&p->color);
-	for(i=x;i<x+dx;i++){
-		for(j=y;j<y+dy;j++){
+	for(i=x;i<x+dx;i++) if (0 <= i && i < vga_width)
+		for(j=y;j<y+dy;j++) if (0 <= j && j < vga_height){
 			yyh = (char *)vga_graph_memstart+j*vga_width+i;
 			*yyh = color;
 		}
-	}
 	return 0;
 }
 
@@ -206,7 +205,8 @@ int sys_get_message(message *msg){
 	tmp = msg_list[msg_head];
 	msg_list[msg_head].mid = 0;   //清空
 	msg_head = (msg_head + 1) % 1024;
-	put_fs_long(tmp.mid,msg);
+	put_fs_long(tmp.mid,&msg->mid);
+	put_fs_long(current->pid,&msg->pid);
 	return 0;
 }
 
@@ -416,13 +416,18 @@ void do_timer(long cpl)
 			post_message(3);
 			if (timer->type == 0) {  //无数次闹钟
 				timer->jiffies = timer->init_jiffies;
+				pre = timer;
+				timer = timer->next;
 			} else {
 				if (pre) pre->next = timer->next;
 				else timer_head = timer->next;
 				free(timer);
 			}
 		}
-		timer = yyh;
+		else{
+			pre = timer;
+			timer = yyh;			 
+		}
 	}
 	
 	if (beepcount)
