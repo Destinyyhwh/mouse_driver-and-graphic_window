@@ -409,21 +409,19 @@ void do_timer(long cpl)
 
 
 	user_timer *timer = timer_head;
-	user_timer *pre = NULL;
 	while (timer) {
-		user_timer *tt = timer->next;
+		user_timer *yyh = timer->next;
 		timer->jiffies--;
 		if (timer->jiffies == 0) {
 			post_message(3);
-			if (timer->type == 0) {
+			if (timer->type == 0) {  //无数次闹钟
 				timer->jiffies = timer->init_jiffies;
 			} else {
-				if (pre) pre->next = timer->next;
-				else timer_head = timer->next;
+				timer_head = timer->next;
 				free(timer);
 			}
 		}
-		timer = tt;
+		timer = yyh;
 	}
 	
 	if (beepcount)
