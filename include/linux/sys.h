@@ -23,6 +23,14 @@ typedef struct {
 
 user_timer *timer_head;
 
+typedef struct{
+	long x;
+	long y;
+	long dx;
+	long dy;
+	long color;
+} object;
+
 
 extern int sys_setup();
 extern int sys_exit();

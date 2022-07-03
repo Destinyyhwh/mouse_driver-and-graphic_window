@@ -150,9 +150,9 @@ int sys_pause(void)
 }
 #define vga_graph_memstart 0xA0000
 #define vga_graph_memsize 64000
-#define cursor_side 6
 #define vga_width 320
 #define vga_height 200
+#define barrier_width 10
 
 void post_message(int type)
 {
@@ -167,17 +167,19 @@ void post_message(int type)
 	sti();
 }
 
-int sys_paint(short *p){
+int sys_paint(object* p){
 	char *yyh;
 	int i;
 	int j;
 	long x = get_fs_word(p);
 	long y = get_fs_word(p+1);
-	long color = get_fs_word(p+2);
-	for(i=x-cursor_side;i<=x+cursor_side;i++){
-		for(j=y-cursor_side;j<=y+cursor_side;j++){
-				yyh = (char*)vga_graph_memstart+j*vga_width+i;
-				*yyh = color;
+	long dx = get_fs_word(p+2);
+	long dy = get_fs_word(p+3);
+	long color = get_fs_word(p+4);
+	for(i=x;i<x+dx;i++){
+		for(j=y;j<y+dy;j++){
+			yyh = (char *)vga_graph_memstart+j*vga_width+i;
+			*yyh = color;
 		}
 	}
 	return 0;
