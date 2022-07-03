@@ -120,9 +120,9 @@ extern int sys_lstat();
 extern int sys_readlink();
 extern int sys_uselib();
 extern int sys_init_graphics();
-extern int sys_get_message();
-extern int sys_paint();
-extern int sys_timer_create();
+extern int sys_get_message(message *msg);
+extern int sys_paint(object *q);
+extern int sys_timer_create(long seconds, int type);
 
 fn_ptr sys_call_table[] = { sys_setup, sys_exit, sys_fork, sys_read,
 sys_write, sys_open, sys_close, sys_waitpid, sys_creat, sys_link,

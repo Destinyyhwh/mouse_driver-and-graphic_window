@@ -7,7 +7,7 @@
 #
 
 AR	=ar
-AS	=as
+AS	=as 
 LD	=ld
 LDFLAGS	=-s -x
 CC	=gcc -march=i386

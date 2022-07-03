@@ -152,11 +152,9 @@ int sys_pause(void)
 #define vga_graph_memsize 64000
 #define vga_width 320
 #define vga_height 200
-#define barrier_width 10
 
 void post_message(int type)
 {
-	cli();
 	if (msg_tail != msg_head - 1) { //未满
 		message msg;
 		msg.mid = type;
@@ -164,18 +162,17 @@ void post_message(int type)
 		msg_list[msg_tail] = msg;
 		msg_tail = (msg_tail + 1) % 1024;
 	}
-	sti();
 }
 
 int sys_paint(object* p){
 	char *yyh;
 	int i;
 	int j;
-	long x = get_fs_word(p);
-	long y = get_fs_word(p+1);
-	long dx = get_fs_word(p+2);
-	long dy = get_fs_word(p+3);
-	long color = get_fs_word(p+4);
+	long x = get_fs_long(p->x);
+	long y = get_fs_long(p->y);
+	long dx = get_fs_long(p->dx);
+	long dy = get_fs_long(p->dy);
+	long color = get_fs_long(p->color);
 	for(i=x;i<x+dx;i++){
 		for(j=y;j<y+dy;j++){
 			yyh = (char *)vga_graph_memstart+j*vga_width+i;
@@ -200,7 +197,6 @@ int sys_timer_create(long seconds, int type)
 
 
 int sys_get_message(message *msg){
-	cli();
     message tmp;
 	if(msg_tail==msg_head){  //循环消息队列
 		put_fs_long(0,msg);
@@ -211,7 +207,6 @@ int sys_get_message(message *msg){
 	msg_list[msg_head].mid = 0;   //清空
 	msg_head = (msg_head + 1) % 1024;
 	put_fs_long(tmp.mid,msg);
-	sti();
 	return 0;
 }
 
@@ -241,11 +236,6 @@ int sys_init_graphics(void){
 	outb(0x0, 0x3D5);
 	outb(0x0D, 0x3D4);
 	outb(0x0, 0x3D5);
-	int i;
-	char *p = vga_graph_memstart;
-	for (i = 0; i < vga_graph_memsize; i++) {
-		*p++ = 3;
-	}
 	return 0;
 }
 
@@ -411,6 +401,7 @@ void do_timer(long cpl)
 
 
 	user_timer *timer = timer_head;
+	user_timer *pre = NULL;
 	while (timer) {
 		user_timer *yyh = timer->next;
 		timer->jiffies--;
@@ -419,7 +410,8 @@ void do_timer(long cpl)
 			if (timer->type == 0) {  //无数次闹钟
 				timer->jiffies = timer->init_jiffies;
 			} else {
-				timer_head = timer->next;
+				if (pre) pre->next = timer->next;
+				else timer_head = timer->next;
 				free(timer);
 			}
 		}
