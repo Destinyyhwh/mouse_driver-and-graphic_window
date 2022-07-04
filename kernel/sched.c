@@ -155,7 +155,6 @@ int sys_pause(void)
 
 void post_message(int type)
 {
-	cli();
 	if (msg_tail != msg_head - 1) { //未满
 		message msg;
 		msg.mid = type;
@@ -163,7 +162,6 @@ void post_message(int type)
 		msg_list[msg_tail] = msg;
 		msg_tail = (msg_tail + 1) % 1024;
 	}
-	sti();
 }
 
 int sys_paint(object* p){
@@ -198,7 +196,6 @@ int sys_timer_create(long seconds, int type)
 
 
 int sys_get_message(message *msg){
-	cli();
     message tmp;
 	if(msg_tail==msg_head){  //循环消息队列
 		put_fs_long(0,&msg->mid);
@@ -211,7 +208,6 @@ int sys_get_message(message *msg){
 	msg_head = (msg_head + 1) % 1024;
 	put_fs_long(tmp.mid,&msg->mid);
 	put_fs_long(current->pid,&msg->pid);
-	sti();
 	return 0;
 }
 
