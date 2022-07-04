@@ -1,3 +1,5 @@
+/*可视化应用程序*/
+
 #define __LIBRARY__
 #include <unistd.h>
 #include <stdio.h>
@@ -96,7 +98,7 @@ void Paint(void)
 int main(void)
 {
 	message msg;
-	timer_create(SECONDS, TYPE); 
+	timer_create(SECONDS, 0); 
 	init_graphics();			
 	init();
 	while (1){
@@ -105,9 +107,11 @@ int main(void)
 		{
 		case CLICK_LEFT:
 			bird.y -= FLY_CLICK_LEFT;
+			Paint();
 			break;
 		case CLICK_RIGHT:
 			bird.x += FLY_CLICK_RIGHT;
+			Paint();
 			break;
 		case TIMER_ARRIVE:
 			Paint();
@@ -169,4 +173,4 @@ int main(void)
 	}
 GAME_OVER:
 	return 0;
-}
+} 
