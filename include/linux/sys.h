@@ -6,7 +6,6 @@
 typedef struct {
     int mid;   //消息ID
     int pid;
-    void *adt;
 }message;
 message msg_list[1024];
 

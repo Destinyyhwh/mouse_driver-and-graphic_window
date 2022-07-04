@@ -350,12 +350,17 @@ void chr_dev_init(void)
 {
 }
 
-
+#define CLICK_LEFT 1
+#define CLICK_RIGHT 2
 static unsigned char mouse_input_count = 0;
+static unsigned char mouse_left_down;
+static unsigned char mouse_right_down;
+static unsigned char mouse_center_down;
 static unsigned char mouse_left_move;
 static unsigned char mouse_down_move;
-static unsigned char mouse_x_position;
-static unsigned char mouse_y_position;
+static unsigned char mouse_x_position = 0;
+static unsigned char mouse_y_position = 0;
+static unsigned char mouse_z_position = 0;
 void readmouse(int mousecode)
 {
     if(mousecode == 0xFA){  //鼠标命令成功响应
@@ -365,13 +370,16 @@ void readmouse(int mousecode)
     switch(mouse_input_count)
     {
         case 1:
+			mouse_left_down = (mousecode & 0x1) == 0x1;
+			mouse_right_down = (mousecode & 0x2) == 0x2;
+			mouse_center_down = (mousecode & 0x4) == 0x4;
             mouse_left_move = (mousecode & 0x10) == 0x10;
             mouse_down_move = (mousecode & 0x20) == 0x20;
-           	if(mousecode == 9){
-                post_message(1);  //1左击
+           	if(mouse_left_down){
+                post_message(CLICK_LEFT);  //1左击
             }
-            if(mousecode == 10){
-                post_message(2);  //2右击
+            if(mouse_right_down){
+                post_message(CLICK_RIGHT);  //2右击
             }
             mouse_input_count++;
             break;
@@ -389,7 +397,11 @@ void readmouse(int mousecode)
             else
                 mouse_y_position += (int)(mousecode);
             if(mouse_y_position < 0) mouse_y_position = 0;
-            mouse_input_count=1;
+            mouse_input_count++;
             break;
+		case 4:
+			mouse_z_position += (int)(mousecode);
+			mouse_input_count++;
+			break;		
 	}
 }
